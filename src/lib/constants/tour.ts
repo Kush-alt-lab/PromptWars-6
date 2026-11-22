@@ -1,6 +1,7 @@
 // ============================================================
 // src/lib/constants/tour.ts
 // Guided tour interactive walkthrough steps and explanations
+// Short, concise guidance directly anchored near highlighted tabs
 // ============================================================
 
 import { TabId, type TourStep } from '@/types';
@@ -11,34 +12,26 @@ export const TOUR_STEPS: TourStep[] = [
     stepNumber: 1,
     totalSteps: 6,
     title: 'Welcome to SaansIQ 🛡️',
-    tag: 'Platform Overview',
+    tag: 'Overview',
     targetTab: TabId.Dashboard,
     targetTabLabel: 'Air Telemetry',
     description:
-      'SaansIQ is an intelligent urban air quality and smog resilience assistant designed to shield families, vulnerable citizens, and commuters during acute winter pollution episodes.',
-    highlights: [
-      'Real-time Hyperlocal Telemetry & Inversion Traps',
-      'Gemini AI Vulnerability Exposure Scheduling',
-      'Hospital-Grade CADR Blueprints & Clean Metro Routing',
-    ],
-    actionPrompt: 'Click Next to explore live municipal air monitoring.',
+      'Real-time urban air intelligence and atmospheric exposure protection to shield you during winter smog.',
+    highlights: ['Multi-source sensor telemetry', 'Thermal inversion detection', 'GenAI health schedules'],
+    actionPrompt: 'Explore the live telemetry dashboard below.',
   },
   {
     id: 'telemetry',
     stepNumber: 2,
     totalSteps: 6,
     title: 'Hyperlocal Telemetry & Smog Heatmap 📡',
-    tag: 'Air Telemetry',
+    tag: 'Live Telemetry',
     targetTab: TabId.Dashboard,
     targetTabLabel: 'Air Telemetry',
     description:
-      'Inspect zone-by-zone AQI, multi-pollutant breakdowns (PM2.5, PM10, NO2, CO, O3), and the spatial smog dispersion grid. Use the simulation buttons to test temperature inversions.',
-    highlights: [
-      'Spatial SVG Radar Heatmap with Screen-Reader Twins',
-      'Boundary-Layer Inversion Trap Detection',
-      'Interactive Winter Smog Spike Simulation Engine',
-    ],
-    actionPrompt: 'Click any sector card or heatmap node to inspect micro-climates.',
+      'Live AQI, multi-pollutant telemetry, and spatial smog dispersion across municipal monitoring sectors.',
+    highlights: ['24-hour forecast trendline', 'Five cross-checked sources', 'Interactive inversion simulation'],
+    actionPrompt: 'Click any sector card or radar node to inspect micro-climates.',
   },
   {
     id: 'routine',
@@ -49,13 +42,9 @@ export const TOUR_STEPS: TourStep[] = [
     targetTab: TabId.Routine,
     targetTabLabel: 'Routine Optimizer',
     description:
-      'Personalize your day according to respiratory vulnerability profiles. Gemini AI computes hour-by-hour exposure schedules and pinpoints safe outdoor windows.',
-    highlights: [
-      'Target Vulnerability Profiles (Infant, Asthmatic, Elderly)',
-      'Solar Convection Boundary Clearing Windows',
-      'Pulmonary Particulate Intake Minimization',
-    ],
-    actionPrompt: 'Select your profile and generate tailored daily schedules.',
+      'Personalized hour-by-hour exposure schedules and safe outdoor windows calculated by Gemini AI.',
+    highlights: ['Vulnerability risk profiles', 'Solar convection clearing windows', 'Particulate dose minimization'],
+    actionPrompt: 'Choose your profile and generate tailored daily schedules.',
   },
   {
     id: 'transit',
@@ -66,13 +55,9 @@ export const TOUR_STEPS: TourStep[] = [
     targetTab: TabId.Transit,
     targetTabLabel: 'Low-Emission Transit',
     description:
-      'Avoid high-smog traffic bottlenecks with Dijkstra pathfinding that favors subterranean metro lines and clean green corridors over surface diesel exhaust traps.',
-    highlights: [
-      'Subterranean Route Optimization',
-      'Inhaled PM2.5 Dose (µg) Modal Comparisons',
-      'Transit Mode Carbon Abatement Metrics',
-    ],
-    actionPrompt: 'Select commute origin and destination to compute clean routes.',
+      'Dijkstra pathfinding favoring subterranean metro corridors over high-smog surface diesel traffic.',
+    highlights: ['Subterranean route preference', 'Inhaled PM2.5 dose comparison', 'Transit carbon offsets'],
+    actionPrompt: 'Select origin and destination to compute clean routes.',
   },
   {
     id: 'iaq',
@@ -83,12 +68,8 @@ export const TOUR_STEPS: TourStep[] = [
     targetTab: TabId.IAQ,
     targetTabLabel: 'Indoor Air & Hacks',
     description:
-      'Calculate required Clean Air Delivery Rates (4 ACH hospital standard) for your rooms, follow inversion-aware window latch schedules, and build DIY Corsi-Rosenthal boxes.',
-    highlights: [
-      'Interactive Room Volume & CADR Calculator',
-      'Meteorological Inversion Window Lock Schedule',
-      '$40 Low-Cost DIY HEPA Filter Blueprints',
-    ],
+      'Hospital-grade 4 ACH room purification audits, inversion window latch schedules, and DIY HEPA box guides.',
+    highlights: ['Room volume & CADR audit', 'Inversion window latch schedule', 'DIY Corsi-Rosenthal boxes'],
     actionPrompt: 'Adjust floor area sliders to audit your living spaces.',
   },
   {
@@ -100,12 +81,8 @@ export const TOUR_STEPS: TourStep[] = [
     targetTab: TabId.Community,
     targetTabLabel: 'Community Action',
     description:
-      'Join collective neighborhood pledges to curb local emissions by up to 28%, and receive automated public safety broadcast advisories in 4 languages.',
-    highlights: [
-      'Neighborhood Emission Reduction Pledges',
-      'Multilingual Safety Broadcasts (EN, HI, AR, ES)',
-      'Real-time Collective CO2 & PM2.5 Offset Metrics',
-    ],
+      'Neighborhood mitigation pledges curbing emissions by up to 28%, and emergency advisories in 4 languages.',
+    highlights: ['Neighborhood pledges', 'Emergency alerts (EN, HI, AR, ES)', 'Collective emission offsets'],
     actionPrompt: 'Pledge your household to collective smog mitigation.',
   },
 ];

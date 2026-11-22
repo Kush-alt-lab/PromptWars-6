@@ -2,6 +2,7 @@
 // src/App.tsx
 // Thin AppShell Router and Layout Orchestrator
 // Per ARCHITECTURE_PATTERNS.md §2.1 & ACCESSIBILITY.md §2
+// Dark Editorial Minimalist Styling (Modeled after Saans Inspiration)
 // ============================================================
 
 import { memo } from 'react';
@@ -21,15 +22,13 @@ const AppShell = memo(function AppShell() {
 
   return (
     <div
-      className={`min-h-screen bg-[#060913] text-slate-100 flex flex-col justify-between relative selection:bg-emerald-500/30 selection:text-emerald-200 ${
+      className={`min-h-screen bg-[#07080a] text-slate-100 flex flex-col justify-between relative selection:bg-white/20 selection:text-white ${
         accessibilityMode === 'high-contrast' ? 'contrast-125' : ''
       }`}
     >
-      {/* Background ambient light orbs */}
+      {/* Subtle atmospheric vignette background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
-        <div className="absolute -top-40 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-glow" />
-        <div className="absolute top-1/3 -right-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-glow" style={{ animationDelay: '2s' }} />
-        <div className="absolute -bottom-20 left-1/3 w-[30rem] h-[30rem] bg-indigo-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-gradient-to-b from-slate-900/20 via-transparent to-transparent opacity-50 blur-3xl" />
       </div>
 
       {/* 1. Header with Tab Navigation */}
@@ -47,7 +46,7 @@ const AppShell = memo(function AppShell() {
         role="tabpanel"
         aria-labelledby={`tab-${activeTab}`}
         tabIndex={-1}
-        className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 focus:outline-none"
+        className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 focus:outline-none"
       >
         {activeTab === TabId.Dashboard && <AirTelemetryDashboard />}
         {activeTab === TabId.Routine && <DailyRoutineOptimizer />}
@@ -59,11 +58,13 @@ const AppShell = memo(function AppShell() {
       {/* 5. Footer Landmark */}
       <footer
         aria-label="Application footer"
-        className="border-t border-slate-800/80 bg-[#060913]/90 backdrop-blur-xl py-6 text-xs text-slate-500 mt-12"
+        className="border-t border-white/[0.08] bg-[#07080a]/95 backdrop-blur-xl py-6 text-xs text-slate-500 mt-12 font-mono"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-slate-300">SaansIQ</span>
+            <span className="font-bold text-white tracking-wider">SAANS</span>
+            <span className="text-slate-600">•</span>
+            <span className="text-slate-400">SaansIQ</span>
             <span className="text-slate-600">•</span>
             <span className="text-slate-400">WCAG 2.2 Level AA Compliant</span>
             <span className="text-slate-600">•</span>

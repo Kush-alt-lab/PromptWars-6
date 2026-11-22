@@ -67,11 +67,11 @@ export const DailyRoutineOptimizer = memo(function DailyRoutineOptimizer() {
             type="button"
             onClick={handleGenerate}
             disabled={isLoading}
-            className="px-7 py-3.5 rounded-2xl font-black text-sm tracking-wide bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-emerald-950/50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-emerald-500 flex items-center justify-center gap-2.5 cursor-pointer"
+            className="px-6 py-3 rounded-lg font-mono font-bold text-xs uppercase tracking-wider bg-white text-black hover:bg-slate-200 active:scale-95 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-white flex items-center justify-center gap-2 cursor-pointer"
           >
             {isLoading ? (
               <>
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                <span className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" aria-hidden="true" />
                 <span>Optimizing with Gemini AI…</span>
               </>
             ) : (
@@ -85,10 +85,10 @@ export const DailyRoutineOptimizer = memo(function DailyRoutineOptimizer() {
 
         {/* Persona Selector Chips */}
         <fieldset className="flex flex-col gap-3">
-          <legend className="text-xs font-black uppercase tracking-wider text-slate-300">
+          <legend className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
             Target Family & Commuter Persona:
           </legend>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {personas.map((p: PersonaProfile) => {
               const isSelected = p.id === activePersona.id;
               return (
@@ -97,18 +97,18 @@ export const DailyRoutineOptimizer = memo(function DailyRoutineOptimizer() {
                   type="button"
                   aria-pressed={isSelected}
                   onClick={() => setActivePersona(p)}
-                  className={`p-4 rounded-2xl border text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer ${
+                  className={`p-4 rounded-xl border text-left transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-white cursor-pointer ${
                     isSelected
-                      ? 'bg-slate-900/95 border-emerald-500/80 shadow-lg shadow-emerald-950/40 ring-1 ring-emerald-500/40 -translate-y-0.5'
-                      : 'bg-slate-900/50 border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/70 text-slate-400'
+                      ? 'bg-[#12141c] border-white/40 ring-1 ring-white/30 text-white'
+                      : 'bg-[#090b10] border-white/[0.08] hover:border-white/20 text-slate-400'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`font-black text-sm tracking-tight ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                    <span className={`font-bold text-sm tracking-tight ${isSelected ? 'text-white' : 'text-slate-300'}`}>
                       {p.name}
                     </span>
                     <span
-                      className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                      className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded ${
                         p.sensitivityLevel === 'high'
                           ? 'bg-red-950/80 text-rose-300 border border-red-500/50'
                           : 'bg-amber-950/80 text-amber-300 border border-amber-500/50'

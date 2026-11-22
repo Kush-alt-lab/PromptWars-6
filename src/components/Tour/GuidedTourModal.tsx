@@ -1,10 +1,10 @@
 // ============================================================
 // src/components/Tour/GuidedTourModal.tsx
-// Accessible interactive guided walkthrough modal (WCAG 2.2 AA)
-// Per ACCESSIBILITY.md §2 & ARCHITECTURE_PATTERNS.md §2.1
+// Short, Focused Guided Tour Popover (WCAG 2.2 AA)
+// Directly anchored near the active highlighted navigation tab
 // ============================================================
 
-import { memo, useEffect, useCallback } from 'react';
+import { memo, useEffect, useCallback, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { TOUR_STEPS } from '@/lib/constants';
 
@@ -15,12 +15,42 @@ export const GuidedTourModal = memo(function GuidedTourModal() {
     tourStepIndex,
     nextTourStep,
     prevTourStep,
-    setTourStepIndex,
   } = useAppContext();
 
   const currentStep = TOUR_STEPS[tourStepIndex] || TOUR_STEPS[0];
   const isLastStep = tourStepIndex === TOUR_STEPS.length - 1;
   const isFirstStep = tourStepIndex === 0;
+
+  // Track position relative to the highlighted tab element
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
+
+  const updatePosition = useCallback(() => {
+    const targetId = `tab-${currentStep.targetTab}`;
+    const el = document.getElementById(targetId);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const cardWidth = Math.min(360, window.innerWidth - 32);
+      // Center card below the target tab, clamped to screen bounds
+      let left = rect.left + rect.width / 2 - cardWidth / 2;
+      left = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, left));
+      const top = rect.bottom + 12;
+      setCoords({ top, left });
+    } else {
+      setCoords(null);
+    }
+  }, [currentStep.targetTab]);
+
+  useEffect(() => {
+    if (!isTourOpen) return;
+    updatePosition();
+
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition);
+    };
+  }, [isTourOpen, updatePosition]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -44,137 +74,122 @@ export const GuidedTourModal = memo(function GuidedTourModal() {
   if (!isTourOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn"
-      role="presentation"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) closeTour();
-      }}
-    >
+    <>
+      {/* 
+        Subtle Backdrop Scrim without backdrop-blur!
+        Allows all underlying telemetry and highlighted tab to remain 100% crisp and readable.
+      */}
+      <div
+        className="fixed inset-0 z-50 bg-black/40 pointer-events-auto transition-opacity"
+        role="presentation"
+        onClick={closeTour}
+      />
+
+      {/* 
+        Compact Floating Tooltip Card (Layered at z-[70] above backdrop)
+        Positioned directly near the highlighted tab
+      */}
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="tour-step-title"
         aria-describedby="tour-step-desc"
-        className="w-full max-w-xl glass-panel border border-emerald-500/40 rounded-3xl p-6 sm:p-8 flex flex-col gap-5 shadow-2xl shadow-black/80 relative overflow-hidden focus:outline-none"
+        style={
+          coords
+            ? { top: `${coords.top}px`, left: `${coords.left}px` }
+            : undefined
+        }
+        className={`fixed z-[70] w-[90vw] max-w-[360px] bg-[#0c0e14] border border-white/20 rounded-xl p-4 shadow-2xl shadow-black/90 flex flex-col gap-3 text-left transition-all duration-200 focus:outline-none ${
+          !coords ? 'top-20 left-1/2 -translate-x-1/2' : ''
+        }`}
         tabIndex={-1}
       >
-        {/* Ambient background glow */}
-        <div className="absolute -top-16 -right-16 w-44 h-44 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none" />
+        {/* Subtle top indicator notch pointing towards the active tab */}
+        <div
+          className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#0c0e14] border-t border-l border-white/20 rotate-45 pointer-events-none"
+          aria-hidden="true"
+        />
 
-        {/* Top Header Row with Skip Button */}
-        <div className="flex items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-2.5">
-            <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-950/90 text-emerald-300 border border-emerald-500/50">
-              {currentStep.tag}
+        {/* Header row: Step Counter & Skip/Close Button */}
+        <div className="flex items-center justify-between gap-3 relative z-10">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] font-bold text-slate-400 tracking-wider uppercase">
+              TOUR {currentStep.stepNumber} / {currentStep.totalSteps}
             </span>
-            <span className="text-xs font-mono font-bold text-slate-400">
-              Step {currentStep.stepNumber} of {currentStep.totalSteps}
-            </span>
+            <span className="sr-only">Step {currentStep.stepNumber} of {currentStep.totalSteps}</span>
           </div>
 
           <button
             type="button"
             onClick={closeTour}
             aria-label="Skip guided tour"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-900/90 border border-slate-700/80 hover:border-slate-600 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="text-slate-400 hover:text-white p-1 rounded transition-colors cursor-pointer text-xs font-mono leading-none"
           >
-            <span>Skip Tour</span>
-            <span aria-hidden="true">✕</span>
+            ✕
           </button>
         </div>
 
-        {/* Highlighted 'Currently On' Location Pill */}
-        <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-slate-950/80 border border-emerald-500/40 text-xs text-emerald-300 relative z-10 shadow-inner">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" aria-hidden="true" />
+        {/* Highlighted 'Currently on Section' indicator */}
+        <div className="flex items-center gap-1.5 text-[11px] text-slate-300 font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
           <span>
-            Currently on Section: <strong className="text-white uppercase tracking-wider">{currentStep.targetTabLabel}</strong>
+            Currently on Section: <strong className="text-white uppercase">{currentStep.targetTabLabel}</strong>
           </span>
         </div>
 
-        {/* Step Content */}
-        <div className="flex flex-col gap-3 relative z-10">
+        {/* Short, concise content */}
+        <div className="flex flex-col gap-1.5 relative z-10">
           <h3
             id="tour-step-title"
-            className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug"
+            className="text-sm font-bold text-white tracking-tight leading-snug"
           >
             {currentStep.title}
           </h3>
 
           <p
             id="tour-step-desc"
-            className="text-xs sm:text-sm text-slate-300 leading-relaxed"
+            className="text-xs text-slate-300 leading-relaxed font-sans"
           >
             {currentStep.description}
           </p>
-
-          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-2 mt-1">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-              Key Capabilities:
-            </span>
-            <ul className="flex flex-col gap-1.5 text-xs text-slate-200">
-              {currentStep.highlights.map((item, idx) => (
-                <li key={idx} className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold" aria-hidden="true">✔</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="text-[11px] text-cyan-400/90 font-medium flex items-center gap-1.5 mt-1">
-            <span aria-hidden="true">💡</span>
-            <span>{currentStep.actionPrompt}</span>
-          </div>
         </div>
 
-        {/* Footer Navigation & Progress */}
-        <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-1.5">
-            {TOUR_STEPS.map((step, idx) => (
-              <button
-                key={step.id}
-                type="button"
-                onClick={() => setTourStepIndex(idx)}
-                aria-label={`Jump to step ${idx + 1}: ${step.title}`}
-                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === tourStepIndex
-                    ? 'w-6 bg-gradient-to-r from-emerald-400 to-teal-400'
-                    : 'w-2 bg-slate-800 hover:bg-slate-700'
-                }`}
-              />
-            ))}
-          </div>
+        {/* Compact bottom action buttons */}
+        <div className="pt-2.5 border-t border-white/10 flex items-center justify-between gap-2 relative z-10">
+          <button
+            type="button"
+            onClick={closeTour}
+            aria-label="Skip guided tour"
+            className="text-xs font-mono text-slate-400 hover:text-white transition-colors cursor-pointer"
+          >
+            Skip
+          </button>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-            <button
-              type="button"
-              onClick={closeTour}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
-            >
-              Skip Tour
-            </button>
-
+          <div className="flex items-center gap-2">
             {!isFirstStep && (
               <button
                 type="button"
                 onClick={prevTourStep}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800/80 text-slate-200 hover:bg-slate-700/80 border border-slate-700/60 transition-all cursor-pointer"
+                aria-label="Previous step"
+                className="px-2.5 py-1 rounded border border-white/20 hover:border-white text-xs font-mono text-slate-200 hover:text-white transition-all cursor-pointer"
               >
-                Previous
+                BACK
+                <span className="sr-only">Previous</span>
               </button>
             )}
 
             <button
               type="button"
               onClick={nextTourStep}
-              className="px-5 py-2 rounded-xl text-xs font-black tracking-wide bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:brightness-110 shadow-md shadow-emerald-950/40 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              aria-label={isLastStep ? 'Get Started' : 'Next Step'}
+              className="px-3.5 py-1 rounded bg-white text-black hover:bg-slate-200 text-xs font-mono font-bold uppercase transition-all cursor-pointer shadow-sm active:scale-95"
             >
-              {isLastStep ? 'Get Started 🚀' : 'Next Step →'}
+              {isLastStep ? 'DONE' : 'NEXT'}
+              <span className="sr-only">{isLastStep ? 'Get Started 🚀' : 'Next Step'}</span>
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 });
